@@ -27,4 +27,5 @@ jobs:
 
       - name: Install pytest and run tests
         run: |
+          export PYTHONPATH="$PYTHONPATH:${{ github.workspace }}"
           pytest
