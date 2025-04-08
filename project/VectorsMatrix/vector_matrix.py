@@ -1,8 +1,8 @@
 import math
 from typing import List
 
-class Vector:
 
+class Vector:
     def __init__(self, coordintes: List[float]) -> None:
         """
         Initialize a vector with a list of coordinates.
@@ -69,7 +69,12 @@ class Vector:
         Returns:
             float: Angle in degrees.
         """
-        return math.degrees(math.acos(Vector.scalar_product(v1, v2) / (Vector.get_len(v1) * Vector.get_len(v2))))
+        return math.degrees(
+            math.acos(
+                Vector.scalar_product(v1, v2)
+                / (Vector.get_len(v1) * Vector.get_len(v2))
+            )
+        )
 
     def __add__(self, v: "Vector") -> "Vector":
         """
@@ -84,7 +89,7 @@ class Vector:
         res: List[float] = []
         len_self = len(self.coordinates)
         len_v = len(v.coordinates)
-        
+
         if len_v >= len_self:
             for i in range(len_self):
                 res.append(self.coordinates[i] + v.coordinates[i])
@@ -95,7 +100,7 @@ class Vector:
                 res.append(self.coordinates[i] + v.coordinates[i])
             for i in range(len_v, len_self):
                 res.append(self.coordinates[i])
-        
+
         return Vector(res)
 
     def __mul__(self, scalar: float) -> "Vector":
@@ -123,7 +128,7 @@ class Vector:
         Returns:
             Vector: Resulting vector.
         """
-        return(self + v * (-1))
+        return self + v * (-1)
 
     def __repr__(self) -> str:
         """
@@ -133,11 +138,9 @@ class Vector:
             str: String in the format `Vector([x1, x2, ...])`.
         """
         return f"Vector({self.coordinates})"
-    
 
 
 class Matrix:
-
     def __init__(self, m: List[List[float]]) -> None:
         """
         Initialize a matrix with a 2D list of elements.
@@ -172,18 +175,23 @@ class Matrix:
         Raises:
             ValueError: If matrices have incompatible dimensions.
         """
-        if len(self.elements) != len(m.elements) and len(self.elements[0]) != len(m.elements[0]):
+        if len(self.elements) != len(m.elements) and len(self.elements[0]) != len(
+            m.elements[0]
+        ):
             raise ValueError("Matrices must have the same dimensions")
         return Matrix(
             [
-                [self.elements[i][j] + m.elements[i][j] for j in range(len(self.elements[0]))]
+                [
+                    self.elements[i][j] + m.elements[i][j]
+                    for j in range(len(self.elements[0]))
+                ]
                 for i in range(len(self.elements))
             ]
         )
 
     def multiplication(m_1: "Matrix", m_2: "Matrix") -> "Matrix":
         """
-        Multiply two matrices. The number of columns in the first matrix must equal 
+        Multiply two matrices. The number of columns in the first matrix must equal
         the number of rows in the second matrix.
 
         Args:
@@ -201,8 +209,11 @@ class Matrix:
         return Matrix(
             [
                 [
-                    sum(m_1.elements[i][r] * m_2.elements[r][j] for r in range(len(m_1.elements[0])))
-                for j in range(len(m_2.elements[0]))
+                    sum(
+                        m_1.elements[i][r] * m_2.elements[r][j]
+                        for r in range(len(m_1.elements[0]))
+                    )
+                    for j in range(len(m_2.elements[0]))
                 ]
                 for i in range(len(m_1.elements))
             ]
@@ -233,7 +244,10 @@ class Matrix:
             Matrix: Transposed matrix.
         """
         return Matrix(
-            [[self.elements[i][j] for i in range(len(self.elements))] for j in range(len(self.elements[0]))]
+            [
+                [self.elements[i][j] for i in range(len(self.elements))]
+                for j in range(len(self.elements[0]))
+            ]
         )
 
     def __sub__(self, m: "Matrix") -> "Matrix":
@@ -246,7 +260,7 @@ class Matrix:
         Returns:
             Matrix: Resulting matrix.
         """
-        return(self + m * (-1))
+        return self + m * (-1)
 
     def __repr__(self) -> str:
         """
