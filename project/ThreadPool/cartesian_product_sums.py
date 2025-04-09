@@ -2,18 +2,22 @@ from typing import List, Generator, Tuple
 import itertools
 from concurrent.futures import ProcessPoolExecutor
 
-def cartesian_product_gen(sets: List[List[int]]) -> Generator[Tuple[int, ...], None, None]:
+
+def cartesian_product_gen(
+    sets: List[List[int]],
+) -> Generator[Tuple[int, ...], None, None]:
     """
-    Генератор декартова произведения (всех возможных комбинаций) для списка множеств целых чисел.
+    Generator for Cartesian product (all possible combinations) of a list of integer sets.
 
     Args:
-    sets (List[List[int]]): Список списков целых чисел, для которых вычисляется декартово произведение.
+        sets (List[List[int]]): List of integer lists for which to compute the Cartesian product.
 
     Returns:
-    Generator[Tuple[int, ...], None, None]: Генератор, возвращающий кортежи с комбинациями элементов входных множеств.
+        Generator[Tuple[int, ...], None, None]: Generator yielding tuples with combinations
+                                              of elements from input sets.
 
     Raises:
-    Нет исключений.
+        No exceptions.
     """
     for combination in itertools.product(*sets):
         yield combination
@@ -21,17 +25,17 @@ def cartesian_product_gen(sets: List[List[int]]) -> Generator[Tuple[int, ...], N
 
 def cartesian_product_sum(thread_num: int, sets: List[List[int]]) -> int:
     """
-    Вычисляет сумму всех элементов декартова произведения с использованием многопоточной обработки.
+    Calculates the sum of all elements in the Cartesian product using multithreading.
 
     Args:
-    thread_num (int): Количество потоков для параллельных вычислений.
-    sets (List[List[int]]): Список списков целых чисел для обработки.
+        thread_num (int): Number of threads for parallel computation.
+        sets (List[List[int]]): List of integer lists to process.
 
     Returns:
-    int: Сумма всех элементов всех комбинаций декартова произведения.
+        int: Sum of all elements of all combinations in the Cartesian product.
 
     Raises:
-    Нет.
+        No exceptions.
     """
     gen = cartesian_product_gen(sets)
     total_sum = 0

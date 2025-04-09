@@ -1,20 +1,35 @@
 import threading
 from typing import Callable, Any, Tuple, List, Dict
 
+
 class ThreadPool:
+    """
+    A thread pool for executing tasks concurrently.
+
+    Args:
+        thread_num (int): Number of threads in the pool.
+
+    Attributes:
+        thread_num (int): Number of threads in the pool.
+        tasks_queue (List[Tuple[Callable, Tuple[Any, ...], Dict[str, Any]]]): Queue of tasks to be executed.
+        threads (List[threading.Thread]): List of worker threads.
+        stop_flag (bool): Flag to signal threads to stop.
+        lock (threading.Lock): Lock for thread synchronization.
+        condition (threading.Condition): Condition variable for task notification.
+    """
 
     def __init__(self, thread_num: int) -> None:
         """
-        Пул потоков для выполнения задач.
+        Initializes the thread pool with the specified number of threads.
 
         Args:
-        thread_num (int): Количество потоков в пуле.
+            thread_num (int): Number of threads to create in the pool.
 
         Returns:
-        Нет возвращаемого значения.
+            None
 
         Raises:
-        Нет явных исключений.
+            None
         """
 
         self.thread_num = thread_num
@@ -22,88 +37,82 @@ class ThreadPool:
 
         self.threads: List[threading.Thread] = []
 
-        self.stop_flag: bool = False  
-        self.lock: threading.Lock = threading.Lock()  
-        self.condition: threading.Condition = threading.Condition(self.lock)  
+        self.stop_flag: bool = False
+        self.lock: threading.Lock = threading.Lock()
+        self.condition: threading.Condition = threading.Condition(self.lock)
 
         for _ in range(thread_num):
             thread = threading.Thread(target=self.worker)
             thread.start()
             self.threads.append(thread)
 
-
     def worker(self):
         """
-        Рабочая функция потока, выполняющая задачи из очереди в бесконечном цикле.
+        Worker function that executes tasks from the queue in an infinite loop.
+
+        Waits for tasks to be available and executes them until the pool is disposed.
 
         Args:
-        Нет параметров.
+            None
 
         Returns:
-        Нет возвращаемого значения.
+            None
 
         Raises:
-        Нет явных исключений.
+            None
         """
         while True:
             with self.condition:
                 while not self.tasks_queue and not self.stop_flag:
                     self.condition.wait()
 
-                if self.stop_flag and not self.tasks_queue: 
+                if self.stop_flag and not self.tasks_queue:
                     break
 
             with self.lock:
                 if self.tasks_queue:
                     task, args, kwargs = self.tasks_queue.pop(0)
                 else:
-                    continue  
+                    continue
 
             task(*args, **kwargs)
-    
-
 
     def enqueue(self, task: Callable, *args: Any, **kwargs: Any):
         """
-        Добавляет задачу в очередь на выполнение.
+        Adds a task to the execution queue.
 
         Args:
-        task (Callable): Функция для выполнения.
-        *args (Any): Позиционные аргументы функции.
-        **kwargs (Any): Именованные аргументы функции.
+            task (Callable): The function to be executed.
+            *args (Any): Positional arguments for the function.
+            **kwargs (Any): Keyword arguments for the function.
 
         Returns:
-        Нет возвращаемого значения.
+            None
 
         Raises:
-        Нет явных исключений.
+            None
         """
         with self.condition:
             self.tasks_queue.append((task, args, kwargs))
             self.condition.notify()
 
-
     def dispose(self):
         """
-        Завершает работу пула потоков, ожидая завершения всех текущих задач.
+        Shuts down the thread pool gracefully, waiting for all current tasks to complete.
 
         Args:
-        Нет параметров.
+            None
 
         Returns:
-        Нет возвращаемого значения.
+            None
 
         Raises:
-        Нет явных исключений.
+            None
         """
-
 
         with self.condition:
             self.stop_flag = True
-            self.condition.notify_all() 
+            self.condition.notify_all()
 
         for thread in self.threads:
             thread.join()
-        
-
-    
