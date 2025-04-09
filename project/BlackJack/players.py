@@ -130,7 +130,7 @@ class Dealer(Player):
     Has unlimited chips and follows specific game rules.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initializes dealer with maximum possible chips.
         """

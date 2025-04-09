@@ -19,7 +19,7 @@ class GameMeta(ABCMeta):
     - strategies: Available bot strategies dictionary
     """
 
-    def __init__(cls, name, bases, namespace):
+    def __init__(cls, name, bases, namespace) -> None:
         super().__init__(name, bases, namespace)
 
         cls.MAX_PLAYERS = 6
@@ -52,7 +52,7 @@ class Game(metaclass=GameMeta):
         round_count (int): Current round number
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize game with fresh deck and empty player list."""
         self.deck = project.BlackJack.deck.Deck()
         self.players: List[Player] = []
@@ -326,7 +326,7 @@ class Game(metaclass=GameMeta):
         else:
             raise ValueError(f"Unknown game rule {rule_name}")
 
-    def play_round(self, print_res: bool = True):
+    def play_round(self, print_res: bool = True) -> None:
         """
         Play one complete round of Blackjack.
 
