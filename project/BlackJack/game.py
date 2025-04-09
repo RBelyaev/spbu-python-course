@@ -1,5 +1,5 @@
 import random
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from abc import ABCMeta, abstractmethod
 from project.BlackJack.players import Player, Bot, Dealer
 import project.BlackJack.deck
@@ -22,14 +22,14 @@ class GameMeta(ABCMeta):
     def __init__(cls, name, bases, namespace) -> None:
         super().__init__(name, bases, namespace)
 
-        cls.MAX_PLAYERS = 6
-        cls.BLACKJACK_PAYOUT = 1.5
-        cls.DEALER_STAND_SCORE = 17
-        cls.MAX_ROUND = 5
-        cls.STOP_CARD = 32
+        cls.MAX_PLAYERS: int = 6
+        cls.BLACKJACK_PAYOUT: int = 1.5
+        cls.DEALER_STAND_SCORE: int = 17
+        cls.MAX_ROUND: int = 5
+        cls.STOP_CARD: int = 32
 
         # Register available bot strategies
-        cls.strategies = {
+        cls.strategies: Dict[str, project.BlackJack.bot_strategy.Strategy] = {
             "accurate": project.BlackJack.bot_strategy.AccurateStrategy(),
             "aggressive": project.BlackJack.bot_strategy.AggressiveStrategy(),
             "counting": project.BlackJack.bot_strategy.CountingStrategy(),
@@ -59,8 +59,8 @@ class Game(metaclass=GameMeta):
         self.counting_players: List[Bot] = []
         self.dealer = Dealer()
         self.bets: Dict[str, int] = {}
-        self.game_over = False
-        self.round_count = 0
+        self.game_over: bool = False
+        self.round_count: int = 0
 
     def add_player(self, player: Player) -> None:
         """
@@ -95,7 +95,9 @@ class Game(metaclass=GameMeta):
         Raises:
             ValueError: If unknown strategy specified
         """
-        strategy = self.strategies.get(strategy_name.lower())
+        strategy: project.BlackJack.bot_strategy.Strategy = self.strategies.get(
+            strategy_name.lower()
+        )
         if strategy:
             return Bot(strategy, bot_name, chips)
         else:
@@ -307,7 +309,9 @@ class Game(metaclass=GameMeta):
                 return
         raise ValueError(f"The bot was not found: {bot_name}")
 
-    def modify_game_rule(self, rule_name: str, value, print_res: bool = True) -> None:
+    def modify_game_rule(
+        self, rule_name: str, value: Any, print_res: bool = True
+    ) -> None:
         """
         Dynamically modify a game rule.
 
