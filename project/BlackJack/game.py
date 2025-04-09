@@ -132,14 +132,14 @@ class Game(metaclass=GameMeta):
                 player.calculate_score()
                 self.counting(card)
 
-            # Special handling for dealer's hidden card
             card = self.deck.get_card()
             if _ == 1:
                 self.dealer.hide_card = card
             else:
                 self.dealer.get_card(card)
                 self.counting(card)
-                self.dealer.calculate_score()
+
+            self.dealer.calculate_score()
 
         self.game_over = False
 
@@ -176,6 +176,7 @@ class Game(metaclass=GameMeta):
         card = self.deck.get_card()
         player.get_card(card)
         player.calculate_score()
+
         self.counting(card)
 
     def play_dealer_turn(self) -> None:
@@ -215,25 +216,23 @@ class Game(metaclass=GameMeta):
         for player in self.players:
             bet = self.bets.get(player.name, 0)
 
-            # Player busts
             if player.score > 21:
                 player.settle_bet(-bet)
                 if print_res:
                     print(
-                        f"{player.name}: {player.score} lost {bet} (bust). Chips: {player.chips}"
+                        f"{player.name}: {player.score} lost {bet} (overage). Chips number: {player.chips}"
                     )
                 continue
 
-            # Dealer busts
             if dealer_score > 21:
-                player.settle_bet(bet)
+                winnings = bet
+                player.settle_bet(winnings)
                 if print_res:
                     print(
-                        f"{player.name}: {player.score} wins {bet} (dealer bust). Chips: {player.chips}"
+                        f"{player.name}: {player.score} win {winnings} (dealer is overage). Chips number: {player.chips}"
                     )
                 continue
 
-            # Player has blackjack
             if (
                 len(player.hand) == 2
                 and player.score == 21
@@ -243,38 +242,38 @@ class Game(metaclass=GameMeta):
                 player.settle_bet(winnings)
                 if print_res:
                     print(
-                        f"{player.name}: {player.score} wins {winnings} (Blackjack). Chips: {player.chips}"
+                        f"{player.name}: {player.score} win {winnings} (Black Jack). Chips number: {player.chips}"
                     )
                 continue
 
-            # Normal win/lose/draw cases
             if player.score > dealer_score:
-                player.settle_bet(bet)
+                winnings = bet
+                player.settle_bet(winnings)
                 if print_res:
                     print(
-                        f"{player.name}: {player.score} wins {bet}. Chips: {player.chips}"
+                        f"{player.name}: {player.score} win {winnings}. Chips number: {player.chips}"
                     )
             elif player.score == dealer_score:
                 player.settle_bet(0)
                 if print_res:
                     print(
-                        f"{player.name}: {player.score} (push). Chips: {player.chips}"
+                        f"{player.name}: {player.score} (draw). Chips number: {player.chips}"
                     )
             else:
                 player.settle_bet(-bet)
                 if print_res:
                     print(
-                        f"{player.name}: {player.score} lost {bet}. Chips: {player.chips}"
+                        f"{player.name}: {player.score} lost {bet}. Chips number: {player.chips}"
                     )
 
     def print_table(self) -> None:
         """Print current game state showing all hands."""
         for player in self.players:
             hand_str = " ".join(str(card) for card in player.hand)
-            print(f"{player.name}: {hand_str}\n")
+            print(player.name + ": " + hand_str + "\n")
 
         hand_str = " ".join(str(card) for card in self.dealer.hand)
-        print(f"Dealer: {hand_str}")
+        print("Dealer: " + hand_str)
         print("____________")
 
     def counting(self, card: project.BlackJack.deck.Card) -> None:
@@ -302,11 +301,11 @@ class Game(metaclass=GameMeta):
                 if strategy:
                     player.strategy = strategy
                     if print_res:
-                        print(f"Changed {bot_name} strategy to {strategy_name}")
+                        print(f"Strategy {bot_name} changed to {strategy_name}")
                 else:
                     raise ValueError(f"Unknown strategy: {strategy_name}")
                 return
-        raise ValueError(f"Bot not found: {bot_name}")
+        raise ValueError(f"The bot was not found: {bot_name}")
 
     def modify_game_rule(self, rule_name: str, value, print_res: bool = True) -> None:
         """
@@ -323,9 +322,9 @@ class Game(metaclass=GameMeta):
         if hasattr(self, rule_name):
             setattr(self, rule_name, value)
             if print_res:
-                print(f"Changed rule {rule_name} to {value}")
+                print(f"Rule {rule_name} changed to {value}")
         else:
-            raise ValueError(f"Unknown rule: {rule_name}")
+            raise ValueError(f"Unknown game rule {rule_name}")
 
     def play_round(self, print_res: bool = True):
         """

@@ -146,5 +146,5 @@ class Dealer(Player):
             AttributeError: Always raises to indicate dealer logic is external
         """
         raise AttributeError(
-            "The logic of the dealer's game is defined in the Game class"
+            f"The logic of the dealer's game is defined in the Game class"
         )
