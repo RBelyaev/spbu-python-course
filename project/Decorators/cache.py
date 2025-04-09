@@ -18,47 +18,47 @@ def cache(max_size: int = 0) -> Callable[[Callable], Callable]:
     Raises:
     ValueError: Если max_size отрицательное число.
     """
-    
+
     if max_size < 0:
         raise ValueError("max_size must be a non-negative integer")
 
     def cache_inner(function: Callable) -> Callable:
         """
-        Внутренняя функция декоратора, реализующая кэширование.
+        Inner decorator function implementing caching logic.
 
         Args:
-        function (Callable): Функция, которую нужно обернуть для кэширования.
+            function (Callable): Function to be wrapped for caching.
 
         Returns:
-        Callable: Обертка функции с добавленной логикой кэширования.
+            Callable: Wrapped function with added caching logic.
 
         Raises:
-        Нет исключений.
+            No exceptions raised.
         """
         cached: OrderedDict[Tuple[Tuple[Any, ...], frozenset], Any] = OrderedDict()
 
         @wraps(function)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             """
-            Обертка функции, выполняющая кэширование результатов.
+            Function wrapper that implements result caching.
 
             Args:
-            *args (Any): Позиционные аргументы исходной функции.
-            **kwargs (Any): Именованные аргументы исходной функции.
+                *args (Any): Positional arguments of the original function.
+                **kwargs (Any): Keyword arguments of the original function.
 
             Returns:
-            Any: Результат выполнения функции (либо из кэша, либо новый результат).
+                Any: Function result (either from cache or newly computed).
 
             Raises:
-            Нет исключений.
+                No exceptions raised.
             """
             cache_key = (args, frozenset(kwargs.items()))
-            
+
             if cache_key in cached:
                 return cached[cache_key]
 
             result = function(*args, **kwargs)
-            
+
             if max_size > 0:
                 if len(cached) >= max_size and max_size > 0:
                     cached.popitem(last=False)

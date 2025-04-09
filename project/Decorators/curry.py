@@ -3,20 +3,22 @@ from typing import Callable, Any, Tuple
 
 def curry_explicit(function: Callable, arity: int) -> Callable:
     """
-    Преобразует функцию в каррированную версию с заданной арностью.
+    Converts a function into its curried version with specified arity.
 
-    Каррированная функция позволяет частичное применение аргументов. Если передано достаточно аргументов (равных арности функции), функция выполняется. В противном случае возвращается новая функция, ожидающая оставшиеся аргументы.
+    A curried function allows partial application of arguments. If enough arguments
+    (equal to the function's arity) are provided, the function is executed. Otherwise,
+    a new function expecting the remaining arguments is returned.
 
     Args:
-    function (Callable): Функция для каррирования.
-    arity (int): Количество аргументов, которые ожидает функция (её арность).
+        function (Callable): The function to be curried.
+        arity (int): The number of arguments the function expects (its arity).
 
     Returns:
-    Callable: Каррированная версия исходной функции.
+        Callable: The curried version of the original function.
 
     Raises:
-    ValueError: Если арность отрицательная.
-    TypeError: Если передано слишком много аргументов.
+        ValueError: If arity is negative.
+        TypeError: If too many arguments are provided.
     """
     if arity == 0:
         return function
@@ -25,13 +27,14 @@ def curry_explicit(function: Callable, arity: int) -> Callable:
 
     def inner_curry(args: Tuple[Any, ...]) -> Callable:
         """
-        Внутренняя функция для каррирования, которая накапливает аргументы.
+        Internal helper function for currying that accumulates arguments.
 
         Args:
-        args (Tuple[Any, ...]): Кортеж уже накопленных аргументов.
+            args (Tuple[Any, ...]): Tuple of already accumulated arguments.
 
         Returns:
-        Callable: Либо результат выполнения функции (если аргументов достаточно), либо новую функцию для приёма следующего аргумента.
+            Callable: Either the function result (if enough arguments) or a new function
+                     expecting the next argument.
         """
         if len(args) == arity:
             return function(*args)
@@ -41,21 +44,20 @@ def curry_explicit(function: Callable, arity: int) -> Callable:
     return inner_curry(())
 
 
-
 def uncurry_explicit(function: Callable, arity: int) -> Callable:
     """
-    Преобразует каррированную функцию обратно в некаррированную версию с заданной арностью.
+    Converts a curried function back to its uncurried version with specified arity.
 
     Args:
-    function (Callable): Каррированная функция для преобразования.
-    arity (int): Количество аргументов, которые ожидает функция (её арность).
+        function (Callable): The curried function to be converted.
+        arity (int): The number of arguments the function expects (its arity).
 
     Returns:
-    Callable: Некаррированная версия исходной функции.
+        Callable: The uncurried version of the original function.
 
     Raises:
-    ValueError: Если арность отрицательная или количество аргументов не совпадает.
-    TypeError: Если переданные аргументы не соответствуют ожиданиям функции.
+        ValueError: If arity is negative or argument count doesn't match.
+        TypeError: If provided arguments don't match function expectations.
     """
     if arity < 0:
         raise ValueError("Arity must be a non-negative integer")
@@ -64,16 +66,16 @@ def uncurry_explicit(function: Callable, arity: int) -> Callable:
 
     def inner_uncurry(*args: Any) -> Any:
         """
-        Внутренняя функция, которая применяет все аргументы сразу.
+        Internal helper function that applies all arguments at once.
 
         Args:
-        *args (Any): Переданные аргументы.
+            *args (Any): Provided arguments.
 
         Returns:
-        Any: Результат выполнения исходной каррированной функции.
+            Any: Result of executing the original curried function.
 
         Raises:
-        ValueError: Если количество аргументов не совпадает с арностью.
+            ValueError: If argument count doesn't match arity.
         """
         if len(args) != arity:
             raise ValueError(f"Expected {arity} arguments, but got {len(args)}")

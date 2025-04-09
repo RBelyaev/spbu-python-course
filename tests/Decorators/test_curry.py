@@ -1,6 +1,7 @@
 import pytest
 from project.Decorators.curry import curry_explicit
 
+
 def test_curry_basic():
     f2 = curry_explicit(lambda x, y, z: f"<{x},{y}, {z}>", 3)
     assert f2(1)(2)(3) == "<1,2, 3>"
@@ -19,7 +20,7 @@ def test_curry_arity_0():
 def test_curry_type_error():
     f = curry_explicit(lambda x, y: x + y, 2)
     with pytest.raises(TypeError):
-        f(1)(2)(3) 
+        f(1)(2)(3)
 
 
 def test_negative_arity():
@@ -40,16 +41,16 @@ def test_curry_preserve_arity():
     with pytest.raises(TypeError):
         curried_function(1)(2)(3)(4)(5)
 
-    assert curried_function(1)(2)(3)(4) == 10  
-    assert curried_function(1)(1)(1)(1) == 4  
-    assert curried_function(1)(2)(3)(-1) == 5  
+    assert curried_function(1)(2)(3)(4) == 10
+    assert curried_function(1)(1)(1)(1) == 4
+    assert curried_function(1)(2)(3)(-1) == 5
 
-    assert curried_function(1)(2)(3)(0) == 6  
-    assert curried_function(1)(2)(-1)(0) == 2  
+    assert curried_function(1)(2)(3)(0) == 6
+    assert curried_function(1)(2)(-1)(0) == 2
 
     partial_application = curried_function(1)(2)
-    assert partial_application(3)(4) == 10  
-    assert partial_application(-1)(-1) == 1  
+    assert partial_application(3)(4) == 10
+    assert partial_application(-1)(-1) == 1
 
 
 def test_curry_with_builtin_functions():

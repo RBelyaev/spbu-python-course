@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import Mock
 from project.Decorators.cache import cache
 
+
 def test_cache_fibonacci():
     @cache(max_size=3)
     def fibonacci(n):
@@ -58,10 +59,10 @@ def test_cache_eviction():
     def cached_func(*args, **kwargs):
         return mock_func(*args, **kwargs)
 
-    cached_func(2)  
-    cached_func(3)  
-    cached_func(4)  
-    cached_func(2)  
+    cached_func(2)
+    cached_func(3)
+    cached_func(4)
+    cached_func(2)
 
     assert mock_func.call_count == 4
 
@@ -73,8 +74,8 @@ def test_cache_with_kwargs():
     def cached_func(*args, **kwargs):
         return mock_func(*args, **kwargs)
 
-    cached_func(x=5) 
-    cached_func(x=5)  
-    cached_func(x=6)  
+    cached_func(x=5)
+    cached_func(x=5)
+    cached_func(x=6)
 
     assert mock_func.call_count == 2
