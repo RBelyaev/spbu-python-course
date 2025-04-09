@@ -46,14 +46,13 @@ class Player(ABC):
         ace_flag = False
         if self.hand:
             for card in self.hand:
-                match card.name:
-                    case "A":
-                        self.score += 1
-                        ace_flag = True
-                    case "K" | "Q" | "J" | "10":
-                        self.score += 10
-                    case _:
-                        self.score += int(card.name)
+                if card.name == "A":
+                    self.score += 1
+                    ace_flag = True
+                elif card.name in ("K", "Q", "J", "10"):
+                    self.score += 10
+                else:
+                    self.score += int(card.name)
             if ace_flag and self.score <= 11:
                 self.score += 10
 
