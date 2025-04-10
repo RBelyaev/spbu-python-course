@@ -57,6 +57,7 @@ class Game(metaclass=GameMeta):
     DEALER_STAND_SCORE: int
     MAX_ROUND: int
     STOP_CARD: int
+    strategies: Dict[str, project.BlackJack.bot_strategy.Strategy]
 
     def __init__(self) -> None:
         """Initialize game with fresh deck and empty player list."""
@@ -113,7 +114,10 @@ class Game(metaclass=GameMeta):
         """Shuffle deck and reset card counters."""
         self.deck.shuffle()
         for c_player in self.counting_players:
-            c_player.strategy.count = 0
+            if isinstance(
+                c_player.strategy, project.BlackJack.bot_strategy.CountingStrategy
+            ):
+                c_player.strategy.count = 0
 
     def start_round(self) -> None:
         """
@@ -287,7 +291,10 @@ class Game(metaclass=GameMeta):
     def counting(self, card: project.BlackJack.deck.Card) -> None:
         """Update card counts for counting strategy bots."""
         for c_player in self.counting_players:
-            c_player.strategy.update_count(card)
+            if isinstance(
+                c_player.strategy, project.BlackJack.bot_strategy.CountingStrategy
+            ):
+                c_player.strategy.update_count(card)
 
     def change_bot_strategy(
         self, bot_name: str, strategy_name: str, print_res: bool = True
