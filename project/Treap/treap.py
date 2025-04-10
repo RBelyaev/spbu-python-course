@@ -6,66 +6,70 @@ from collections.abc import MutableMapping
 class TreapNode:
     def __init__(self, key: int, value: Any, priority: Optional[int] = None) -> None:
         """
-        Узел структуры данных Treap.
+        Node of the Treap data structure.
 
         Attributes:
-        key (int): Ключ узла.
-        value (Any): Значение, связанное с ключом.
-        priority (int): Приоритет узла (случайное значение по умолчанию).
-        left (Optional[TreapNode]): Левый дочерний узел.
-        right (Optional[TreapNode]): Правый дочерний узел.
+        key (int): The key of the node.
+        value (Any): The value associated with the key.
+        priority (int): Node priority (random default value).
+        left (Optional[TreapNode]): The left child node.
+        right (Optional[TreapNode]): The right child node.
 
         Args:
-        key (int): Ключ узла.
-        value (Any): Значение узла.
-        priority (Optional[int]): Опциональный приоритет узла.
+        key (int): The key of the node.
+        value (Any): The value of the node.
+        priority (Optional[int]): The optional priority of the node.
 
         Returns:
-        Нет возвращаемого значения.
+        There is no return value.
 
         Raises:
-        Нет исключений.
+        There are no exceptions.
         """
         self.key: int = key
         self.value: Any = value
-        self.priority: int = (priority if priority is not None else random.randint(1, 2**31 - 1))
+        self.priority: int = (
+            priority if priority is not None else random.randint(1, 2**31 - 1)
+        )
         self.left: Optional[TreapNode] = None
         self.right: Optional[TreapNode] = None
 
 
 class Treap(MutableMapping):
     """
-    Реализация структуры данных Treap (дерево + куча), поддерживающей интерфейс MutableMapping.
+    Implementation of a Treap (tree + heap) data structure that supports the MutableMapping interface.
 
-    Treap сочетает свойства бинарного дерева поиска и кучи, обеспечивая эффективные операции вставки, удаления и поиска.
+    Treap combines the properties of a binary search tree and a heap, providing efficient insertion, deletion, and search operations.
     """
 
     def __init__(self, root: Optional[TreapNode] = None) -> None:
         """
         Args:
-        root (Optional[TreapNode]): Корневой узел Treap (по умолчанию None).
+        root (Optional[TreapNode]): The root node of the Treap (None by default).
 
         Returns:
-        Нет возвращаемого значения (конструктор).
+        There is no return value (constructor).
 
         Raises:
-        Нет исключений.
+        There are no exceptions.
         """
         self.root: Optional[TreapNode] = root
 
-    def split(self, node: Optional[TreapNode], key: int) -> Tuple[Optional[TreapNode], Optional[TreapNode]]:
+    def split(
+        self, node: Optional[TreapNode], key: int
+    ) -> Tuple[Optional[TreapNode], Optional[TreapNode]]:
         """
-        Разделяет Treap на два поддерева по заданному ключу.
+        Splits a Treap into two subtrees by a given key.
 
         Args:
-        node (Optional[TreapNode]): Корневой узел для разделения.
-        key (int): Ключ для разделения.
+        node (Optional[TreapNode]): The root node for separation.
+        key (int): The key to split.
 
         Returns:
-        Tuple[Optional[TreapNode], Optional[TreapNode]]: Два поддерева (ключи < key и ключи >= key).
+        Tuple[Optional[TreapNode], Optional[TreapNode]]: Two subtrees (keys < key and keys>= key).
 
         Raises:
-        Нет исключений.
+        There are no exceptions.
         """
         if node is None:
             return None, None
@@ -76,19 +80,21 @@ class Treap(MutableMapping):
             node.right, right = self.split(node.right, key)
             return node, right
 
-    def merge(self, left_node: Optional[TreapNode], right_node: Optional[TreapNode]) -> Optional[TreapNode]:
+    def merge(
+        self, left_node: Optional[TreapNode], right_node: Optional[TreapNode]
+    ) -> Optional[TreapNode]:
         """
-        Объединяет два Treap в один с сохранением свойств структуры.
+        Combines two Treaps into one while preserving the properties of the structure.
 
         Args:
-        left_node (Optional[TreapNode]): Корень левого поддерева.
-        right_node (Optional[TreapNode]): Корень правого поддерева.
+        left_node (Optional[TreapNode]): The root of the left subtree.
+        right_node (Optional[TreapNode]): The root of the right subtree.
 
         Returns:
-        Optional[TreapNode]: Корень объединенного дерева.
+        Optional[TreapNode]: The root of the combined tree.
 
         Raises:
-        Нет исключений.
+        There are no exceptions.
         """
         if right_node is None:
             return left_node
@@ -101,97 +107,91 @@ class Treap(MutableMapping):
             right_node.left = self.merge(left_node, right_node.left)
             return right_node
 
-
-
     def insert(self, node: TreapNode, key: int, value: Any) -> TreapNode:
         """
-        Вставляет новый узел или обновляет значение существующего.
+        Inserts a new node or updates the value of an existing one.
 
         Args:
-        node (TreapNode): Корневой узел.
-        key (int): Ключ для вставки.
-        value (Any): Значение для вставки.
+        node (Ttreenode): The root node.
+        key (int): The key to insert.
+        value (Any): The value to insert.
 
         Returns:
-        TreapNode: Корень дерева после вставки.
+        TreapNode: The root of the tree after insertion.
 
         Raises:
-        Нет исключений.
+        There are no exceptions.
         """
         new_node = self.get_node(key)
         if new_node is not None:
             new_node.value = value
             return self.root
-        
+
         new_node = TreapNode(key, value)
         node_1, node_2 = self.split(node, key)
         return self.merge(self.merge(node_1, new_node), node_2)
 
-
-
     def __len__(self) -> int:
         """
-        Возвращает узел по ключу.
+        Returns the node by key.
 
         Args:
-        key (int): Ключ для поиска.
+        key (int): The key to search for.
 
         Returns:
-        TreapNode: Найденный узел или None.
+        TreapNode: Found node or None.
 
         Raises:
-        Нет исключений.
+        There are no exceptions.
         """
         return sum(1 for _ in self)
 
     def __contains__(self, key: Any) -> bool:
         """
-        Итератор для обхода Treap в порядке возрастания ключей.
+        Iterator for traversing Treap in ascending order of keys.
 
         Args:
-        node (Optional[TreapNode]): Корневой узел для обхода.
+        node (Optional[TreapNode]): The root node to crawl.
 
         Yields:
-        Iterator: Ключи дерева в порядке возрастания.
+        Iterator: The keys of the tree are in ascending order.
 
         Raises:
-        Нет исключений.
+        There are no exceptions.
         """
         try:
-            self[key] 
+            self[key]
             return True
         except KeyError:
             return False
 
     def __setitem__(self, key: int, value: Any) -> None:
         """
-        Итератор для обхода Treap в порядке убывания ключей.
+        Iterator for traversing Treap in descending order of keys.
 
         Args:
-        node (Optional[TreapNode]): Корневой узел для обхода.
+        node (Optional[TreapNode]): The root node to crawl.
 
         Yields:
-        Iterator: Ключи дерева в порядке убывания.
+        Iterator: The keys of the tree are in descending order.
 
         Raises:
-        Нет исключений.
+        There are no exceptions.
         """
         self.root = self.insert(self.root, key, value)
 
-    
-
     def get_node(self, key: int) -> TreapNode:
         """
-        Поиск узла в Treap по заданному ключу.
+        Searching for a node in a Treap using a given key.
 
         Args:
-        key (int): Ключ для поиска в дереве.
+        key (int): The key to search in the tree.
 
         Returns:
-        TreapNode: Найденный узел или None, если узел с таким ключом не существует.
+        TreapNode: Found node or None if a node with such a key does not exist.
 
         Raises:
-        Нет исключений.
+        There are no exceptions.
         """
         node = self.root
         while node:
@@ -203,39 +203,36 @@ class Treap(MutableMapping):
                 node = node.right
         return node
 
-    
     def __getitem__(self, key: int) -> str:
         """
-        Возвращает значение по ключу.
+        Returns the value by key.
 
         Args:
-        key (int): Ключ для поиска.
+        key (int): The key to search for.
 
         Returns:
-        str: Значение, связанное с ключом.
+        str: The value associated with the key.
 
         Raises:
-        KeyError: Если ключ не найден.
+        KeyError: If the key is not found.
         """
         node = self.get_node(key)
         if node == None:
             raise KeyError(f"Key {key} not found.")
         return node.value
 
-
-
     def __delitem__(self, key: int) -> None:
         """
-        Удаляет узел с указанным ключом.
+        Deletes the node with the specified key.
 
         Args:
-        key (int): Ключ для удаления.
+        key (int): The key to delete.
 
         Returns:
-        Нет возвращаемого значения.
+        There is no return value.
 
         Raises:
-        KeyError: Если ключ не найден.
+        KeyError: If the key is not found.
         """
         parent = None
         node = self.root
@@ -259,35 +256,33 @@ class Treap(MutableMapping):
         else:
             parent.right = new_child
 
-            
-
     def __iter__(self) -> Iterator:
         """
-        Возвращает итератор для обхода ключей в порядке возрастания.
+        Returns an iterator for traversing keys in ascending order.
 
         Args:
-        Нет аргументов.
+        There are no arguments.
 
         Returns:
-        Iterator: Итератор по ключам.
+        Iterator: Key iterator.
 
         Raises:
-        Нет исключений.
+        There are no exceptions.
         """
         return self.inorder_iter(self.root)
 
     def inorder_iter(self, node: Optional[TreapNode]) -> Iterator:
         """
-        Вспомогательный метод для inorder-обхода (по возрастанию).
+        Auxiliary method for inorder traversal (ascending).
 
         Args:
-        node (Optional[TreapNode]): Узел для начала обхода.
+        node (Optional[TreapNode]): The node to start the crawl.
 
         Yields:
-        Iterator: Ключи в порядке возрастания.
+        Iterator: Keys in ascending order.
 
         Raises:
-        Нет исключений.
+        There are no exceptions.
         """
         if node:
             yield from self.inorder_iter(node.left)
@@ -296,31 +291,31 @@ class Treap(MutableMapping):
 
     def __reversed__(self) -> Iterator:
         """
-        Возвращает итератор для обхода ключей в порядке убывания.
+        Returns an iterator for traversing keys in descending order.
 
         Args:
-        Нет аргументов.
+        There are no arguments.
 
         Returns:
-        Iterator: Итератор по ключам.
+        Iterator: Key iterator.
 
         Raises:
-        Нет исключений.
+        There are no exceptions.
         """
         return self.reverse_inorder_iter(self.root)
 
     def reverse_inorder_iter(self, node: Optional[TreapNode]) -> Iterator:
         """
-        Вспомогательный метод для обратного inorder-обхода (по убыванию).
+        Auxiliary method for reverse inorder traversal (descending).
 
         Args:
-        node (Optional[TreapNode]): Узел для начала обхода.
+        node (Optional[TreapNode]): The node to start the crawl.
 
         Yields:
-        Iterator: Ключи в порядке убывания.
+        Iterator: Keys in descending order.
 
         Raises:
-        Нет исключений.
+        There are no exceptions.
         """
         if node:
             yield from self.reverse_inorder_iter(node.right)

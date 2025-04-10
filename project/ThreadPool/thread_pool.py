@@ -1,8 +1,8 @@
 import threading
 from typing import Callable, Any, Tuple, List, Dict
 
-class ThreadPool:
 
+class ThreadPool:
     def __init__(self, thread_num: int) -> None:
         """
         Пул потоков для выполнения задач.
@@ -22,15 +22,14 @@ class ThreadPool:
 
         self.threads: List[threading.Thread] = []
 
-        self.stop_flag: bool = False  
-        self.lock: threading.Lock = threading.Lock()  
-        self.condition: threading.Condition = threading.Condition(self.lock)  
+        self.stop_flag: bool = False
+        self.lock: threading.Lock = threading.Lock()
+        self.condition: threading.Condition = threading.Condition(self.lock)
 
         for _ in range(thread_num):
             thread = threading.Thread(target=self.worker)
             thread.start()
             self.threads.append(thread)
-
 
     def worker(self):
         """
@@ -50,18 +49,16 @@ class ThreadPool:
                 while not self.tasks_queue and not self.stop_flag:
                     self.condition.wait()
 
-                if self.stop_flag and not self.tasks_queue: 
+                if self.stop_flag and not self.tasks_queue:
                     break
 
             with self.lock:
                 if self.tasks_queue:
                     task, args, kwargs = self.tasks_queue.pop(0)
                 else:
-                    continue  
+                    continue
 
             task(*args, **kwargs)
-    
-
 
     def enqueue(self, task: Callable, *args: Any, **kwargs: Any):
         """
@@ -82,7 +79,6 @@ class ThreadPool:
             self.tasks_queue.append((task, args, kwargs))
             self.condition.notify()
 
-
     def dispose(self):
         """
         Завершает работу пула потоков, ожидая завершения всех текущих задач.
@@ -97,13 +93,9 @@ class ThreadPool:
         Нет явных исключений.
         """
 
-
         with self.condition:
             self.stop_flag = True
-            self.condition.notify_all() 
+            self.condition.notify_all()
 
         for thread in self.threads:
             thread.join()
-        
-
-    

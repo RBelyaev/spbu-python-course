@@ -6,6 +6,7 @@ class Strategy(ABC):
     """
     Base class for different playing strategies.
     """
+
     @abstractmethod
     def decide_hit(self, score: int) -> bool:
         pass
@@ -15,6 +16,7 @@ class AccurateStrategy(Strategy):
     """
     Strategy where the player hits if the hand value is less than 14.
     """
+
     def decide_hit(self, score: int) -> bool:
         return score < 14
 
@@ -23,6 +25,7 @@ class AggressiveStrategy(Strategy):
     """
     Strategy where the player hits if the hand value is less than 17.
     """
+
     def decide_hit(self, score: int) -> bool:
         return score < 17
 
@@ -34,6 +37,7 @@ class CountingStrategy(Strategy):
     Attributes:
         count (int): The count value that tracks the advantage in the deck.
     """
+
     def __init__(self) -> None:
         self.count: int = 0
 
@@ -56,5 +60,3 @@ class CountingStrategy(Strategy):
             return score < 16
         else:
             return score < 17
-        
-    

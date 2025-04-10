@@ -49,59 +49,58 @@ def get_colour(index: int) -> Tuple[int, int, int, int]:
     return next(rgba)
 
 
-
 def prime_dec(func: Callable[[], Generator[int, None, None]]) -> Callable[[int], int]:
-        """
-        Декоратор для генератора простых чисел, который модифицирует его поведение:
-        возвращает k-е простое число и сохраняет последнее сгенерированное простое число как атрибут.
+    """
+    Декоратор для генератора простых чисел, который модифицирует его поведение:
+    возвращает k-е простое число и сохраняет последнее сгенерированное простое число как атрибут.
 
-        Args:
-        func (Callable[[], Generator[int, None, None]]): Функция-генератор, возвращающая простые числа.
+    Args:
+    func (Callable[[], Generator[int, None, None]]): Функция-генератор, возвращающая простые числа.
 
-        Returns:
-        Callable[[int], int]: Функция-обертка, которая возвращает k-е простое число и сохраняет последнее значение.
+    Returns:
+    Callable[[int], int]: Функция-обертка, которая возвращает k-е простое число и сохраняет последнее значение.
 
-        Raises:
-        ValueError: Если k меньше последнего запрошенного значения.
-        RuntimeError: Если генератор не вернул значение.
-        """
-        gen = func()
-        last_k: int = 0
-        last_prime: Optional[int] = None
+    Raises:
+    ValueError: Если k меньше последнего запрошенного значения.
+    RuntimeError: Если генератор не вернул значение.
+    """
+    gen = func()
+    last_k: int = 0
+    last_prime: Optional[int] = None
 
-        def wrapper(k: int) -> int:
-            nonlocal last_k, last_prime
+    def wrapper(k: int) -> int:
+        nonlocal last_k, last_prime
 
-            if k < last_k:
-                raise ValueError(
-                    "k must be greater than or equal to the last requested value."
-                )
+        if k < last_k:
+            raise ValueError(
+                "k must be greater than or equal to the last requested value."
+            )
 
-            for _ in range(last_k, k):
-                last_prime = next(gen)
+        for _ in range(last_k, k):
+            last_prime = next(gen)
 
-            last_k = k
-            if last_prime is None:
-                raise RuntimeError("Prime generator did not yield a value.")
+        last_k = k
+        if last_prime is None:
+            raise RuntimeError("Prime generator did not yield a value.")
 
-            return last_prime
+        return last_prime
 
-        return wrapper
+    return wrapper
 
 
 def prime_generator() -> Generator[int, None, None]:
     """
-        Генератор простых чисел.
+    Генератор простых чисел.
 
-        Args:
-        Нет аргументов.
+    Args:
+    Нет аргументов.
 
-        Returns:
-        Generator[int, None, None]: Генератор, который возвращает простые числа, начиная с 2.
+    Returns:
+    Generator[int, None, None]: Генератор, который возвращает простые числа, начиная с 2.
 
-        Raises:
-        Нет исключений.
-        """
+    Raises:
+    Нет исключений.
+    """
     num = 2
     flag = True
     while True:

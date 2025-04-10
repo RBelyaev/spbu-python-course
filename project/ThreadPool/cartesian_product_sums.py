@@ -2,7 +2,10 @@ from typing import List, Generator, Tuple
 import itertools
 from concurrent.futures import ProcessPoolExecutor
 
-def cartesian_product_gen(sets: List[List[int]]) -> Generator[Tuple[int, ...], None, None]:
+
+def cartesian_product_gen(
+    sets: List[List[int]],
+) -> Generator[Tuple[int, ...], None, None]:
     """
     Генератор декартова произведения (всех возможных комбинаций) для списка множеств целых чисел.
 
