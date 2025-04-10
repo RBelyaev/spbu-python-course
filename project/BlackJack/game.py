@@ -102,10 +102,10 @@ class Game(metaclass=GameMeta):
         Raises:
             ValueError: If unknown strategy specified
         """
-        strategy: project.BlackJack.bot_strategy.Strategy = self.strategies.get(
-            strategy_name.lower()
-        )
-        if strategy is not None:
+        strategy: Optional[
+            project.BlackJack.bot_strategy.Strategy
+        ] = self.strategies.get(strategy_name.lower())
+        if strategy:
             return Bot(strategy, bot_name, chips)
         else:
             raise ValueError(f"Unknown strategy: {strategy_name}")
