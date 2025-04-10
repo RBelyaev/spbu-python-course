@@ -23,7 +23,7 @@ class GameMeta(ABCMeta):
         super().__init__(name, bases, namespace)
 
         cls.MAX_PLAYERS: int = 6
-        cls.BLACKJACK_PAYOUT: int = 1.5
+        cls.BLACKJACK_PAYOUT: float = 1.5
         cls.DEALER_STAND_SCORE: int = 17
         cls.MAX_ROUND: int = 5
         cls.STOP_CARD: int = 32
@@ -53,7 +53,7 @@ class Game(metaclass=GameMeta):
     """
 
     MAX_PLAYERS: int
-    BLACKJACK_PAYOUT: int
+    BLACKJACK_PAYOUT: float
     DEALER_STAND_SCORE: int
     MAX_ROUND: int
     STOP_CARD: int
@@ -105,7 +105,7 @@ class Game(metaclass=GameMeta):
         strategy: project.BlackJack.bot_strategy.Strategy = self.strategies.get(
             strategy_name.lower()
         )
-        if strategy:
+        if strategy is not None:
             return Bot(strategy, bot_name, chips)
         else:
             raise ValueError(f"Unknown strategy: {strategy_name}")
