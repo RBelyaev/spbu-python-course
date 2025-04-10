@@ -52,6 +52,12 @@ class Game(metaclass=GameMeta):
         round_count (int): Current round number
     """
 
+    MAX_PLAYERS: int
+    BLACKJACK_PAYOUT: int
+    DEALER_STAND_SCORE: int
+    MAX_ROUND: int
+    STOP_CARD: int
+
     def __init__(self) -> None:
         """Initialize game with fresh deck and empty player list."""
         self.deck = project.BlackJack.deck.Deck()
