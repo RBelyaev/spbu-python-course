@@ -209,10 +209,6 @@ class Game(metaclass=GameMeta):
             self.dealer.calculate_score()
             self.print_table()
 
-        # End game if max rounds reached
-        if self.MAX_ROUND == self.round_count:
-            self.game_over = True
-
     def settle_bets(self, print_res: bool = True) -> None:
         """
         Settle all bets based on game outcome.
@@ -234,6 +230,11 @@ class Game(metaclass=GameMeta):
                     print(
                         f"{player.name}: {player.score} lost {bet} (overage). Chips number: {player.chips}"
                     )
+                # If a player has no chips left, he is eliminated
+                if player.chips <= 0:
+                    if print_res:
+                        print(f"{player.name} is eliminated")
+                    self.remove_player(player)
                 continue
 
             if dealer_score > 21:
@@ -277,6 +278,24 @@ class Game(metaclass=GameMeta):
                     print(
                         f"{player.name}: {player.score} lost {bet}. Chips number: {player.chips}"
                     )
+                    # If a player has no chips left, he is eliminated
+                    if player.chips <= 0:
+                        if print_res:
+                            print(f"{player.name} is eliminated")
+                        self.remove_player(player)
+
+    def remove_player(self, player: Player) -> None:
+        """
+        Remove a player from the game, typically after they run out of chips.
+
+        Args:
+            player (Player): The player to remove. Must be an instance of `Player` or its subclasses (`Bot`, etc.).
+        """
+        self.players.remove(player)
+        if isinstance(player, Bot) and isinstance(
+            player.strategy, project.BlackJack.bot_strategy.CountingStrategy
+        ):
+            self.counting_players.remove(player)
 
     def print_table(self) -> None:
         """Print current game state showing all hands."""
@@ -289,7 +308,15 @@ class Game(metaclass=GameMeta):
         print("____________")
 
     def counting(self, card: project.BlackJack.deck.Card) -> None:
-        """Update card counts for counting strategy bots."""
+        """
+        Update the card count for bots using the CountingStrategy.
+
+        This method is called whenever a new card is dealt (including the dealer's hidden card).
+        It iterates through all card-counting bots and updates their internal count.
+
+        Args:
+            card (Card): The card that was dealt. Its value affects the count.
+        """
         for c_player in self.counting_players:
             if isinstance(
                 c_player.strategy, project.BlackJack.bot_strategy.CountingStrategy
@@ -364,13 +391,24 @@ class Game(metaclass=GameMeta):
 
         self.play_dealer_turn()
         self.settle_bets()
+        # The game is over if there are no players left
+        if not self.players:
+            self.game_over = True
+        # End game if max rounds reached
+        if self.MAX_ROUND == self.round_count:
+            self.game_over = True
 
     def play(self, print_res: bool = True) -> None:
         """
-        Play complete game until completion.
+        Start and manage the game loop until completion.
+
+        The game continues until:
+        - All players are eliminated (`self.players` is empty), or
+        - The maximum number of rounds (`self.MAX_ROUND`) is reached.
 
         Args:
-            print_res (bool): Whether to print game progress
+            print_res (bool): If True, prints round summaries and results.
+
         """
         self.shuffle()
         while not self.game_over:
