@@ -107,7 +107,9 @@ class Treap(MutableMapping):
             right_node.left = self.merge(left_node, right_node.left)
             return right_node
 
-    def insert(self, node: Optional[TreapNode], key: int, value: Any) -> Optional[TreapNode]:
+    def insert(
+        self, node: Optional[TreapNode], key: int, value: Any
+    ) -> Optional[TreapNode]:
         """
         Inserts a new node or updates the value of an existing one.
 
