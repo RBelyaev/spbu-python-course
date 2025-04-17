@@ -1,4 +1,6 @@
 black
+matplotlib
 mypy
+plotly
 pre-commit
 pytest
